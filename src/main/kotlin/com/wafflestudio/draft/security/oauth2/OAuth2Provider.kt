@@ -1,6 +1,7 @@
 package com.wafflestudio.draft.security.oauth2
 
-import com.wafflestudio.draft.dto.request.AuthenticationRequest
+import com.wafflestudio.draft.dto.AuthenticationDTO
+//import com.wafflestudio.draft.dto.request.AuthenticationRequest
 import com.wafflestudio.draft.model.User
 import com.wafflestudio.draft.security.oauth2.OAuth2Token
 import com.wafflestudio.draft.security.oauth2.client.OAuth2Client
@@ -26,7 +27,7 @@ class OAuth2Provider(
 
     @Throws(AuthenticationException::class)
     override fun authenticate(authentication: Authentication): Authentication {
-        val request = authentication.credentials as AuthenticationRequest
+        val request = authentication.credentials as AuthenticationDTO.Request
         val response: OAuth2Response?
         val currentUser: User?
         response = requestAuthentication(request)
@@ -38,7 +39,7 @@ class OAuth2Provider(
 
     // Request authenticate to auth server by access token
     @Throws(AuthenticationException::class)
-    fun requestAuthentication(request: AuthenticationRequest): OAuth2Response {
+    fun requestAuthentication(request: AuthenticationDTO.Request): OAuth2Response {
         if (request.authProvider == null) throw UsernameNotFoundException("authServer is not given")
         val authServer = oAuth2ClientMap[request.authProvider!!.toUpperCase()]
                 ?: throw UsernameNotFoundException(String.format("Unknown OAuth2 provider '%s'", request.authProvider))

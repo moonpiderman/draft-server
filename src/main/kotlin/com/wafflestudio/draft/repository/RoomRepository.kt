@@ -22,6 +22,7 @@ interface RoomRepository : JpaRepository<Room?, Long?> {
             @Param("end_time") endTime: LocalDateTime?
     ): List<Room>?
 
+
     @Query("SELECT r FROM Room r " +
             "WHERE r.name LIKE %:name% " +
             "AND (COALESCE(:start_time, null) is null or r.startTime >= :start_time) " +

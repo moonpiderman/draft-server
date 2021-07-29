@@ -27,7 +27,6 @@ class PreferenceService(private val preferenceRepository: PreferenceRepository) 
             })
         }
     }
-
     fun getPlayableUsers(region: String?, dayOfWeek: DayOfWeek?, start: LocalTime?, end: LocalTime?): List<Long?>? {
         return preferenceRepository.getPlayableUsers(region, dayOfWeek, start, end)
     }

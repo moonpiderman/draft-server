@@ -2,6 +2,7 @@ package com.wafflestudio.draft.api
 
 import com.wafflestudio.draft.dto.GameDTO
 import com.wafflestudio.draft.dto.RoomDTO
+import com.wafflestudio.draft.dto.UserDTO
 import com.wafflestudio.draft.dto.response.ListResponse
 import com.wafflestudio.draft.dto.response.ParticipantsResponse
 import com.wafflestudio.draft.error.AlreadyParticipatingRoomException
@@ -32,7 +33,7 @@ class RoomApiController(private val fcmService: FCMService, // FIXME: Use fcmSer
 
     @PostMapping("/")
     @ResponseStatus(HttpStatus.CREATED)
-    fun saveRoomV1(@RequestBody @Valid request: RoomDTO.CreateRequest, @CurrentUser currentUser: UserPrincipal): RoomDTO.Response {
+    fun saveRoomV1(@Valid @ModelAttribute request: RoomDTO.CreateRequest, @CurrentUser currentUser: UserPrincipal): RoomDTO.Response {
         if (roomService.existsCurrentlyParticipating(currentUser.user, request.startTime, request.endTime)) {
             throw ConcurrentlyParticipatingOtherRoomException()
         }
@@ -96,7 +97,7 @@ class RoomApiController(private val fcmService: FCMService, // FIXME: Use fcmSer
     }
 
     @GetMapping(path = ["{id}/participant/"])
-    fun getParticipants(@PathVariable("id") id: Long): ParticipantsResponse? {
+    fun getParticipants(@PathVariable("id") id: Long): UserDTO.ParticipantsResponse? {
         val room = roomService.findOne(id)
         return participantService.getParticipants(room)
     }
@@ -122,9 +123,9 @@ class RoomApiController(private val fcmService: FCMService, // FIXME: Use fcmSer
 
     @PutMapping(path = ["{id}"])
     fun putRoomV1(
-            @PathVariable("id") id: Long,
-            @RequestBody request: RoomDTO.UpdateRequest,
-            @CurrentUser currentUser: UserPrincipal
+        @PathVariable("id") id: Long,
+        @ModelAttribute request: RoomDTO.UpdateRequest,
+        @CurrentUser currentUser: UserPrincipal
     ): RoomDTO.Response {
         val room = roomService.findOne(id)
         room.apply {

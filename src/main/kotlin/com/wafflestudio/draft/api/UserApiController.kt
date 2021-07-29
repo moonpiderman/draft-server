@@ -1,6 +1,6 @@
 package com.wafflestudio.draft.api
 
-import com.wafflestudio.draft.dto.RoomDTO
+import com.wafflestudio.draft.dto.*
 import com.wafflestudio.draft.dto.request.*
 import com.wafflestudio.draft.dto.response.*
 import com.wafflestudio.draft.model.Device
@@ -35,7 +35,7 @@ class UserApiController(private val oAuth2Provider: OAuth2Provider,
                         private val jwtTokenProvider: JwtTokenProvider) {
     @PostMapping("/signup/")
     @Throws(IOException::class)
-    fun createUser(@ModelAttribute @Valid signUpRequest: SignUpRequest, response: HttpServletResponse): ResponseEntity<User?>? {
+    fun createUser(@ModelAttribute @Valid signUpRequest: SignUpDTO.Request, response: HttpServletResponse): ResponseEntity<User?>? {
         val user: User?
         val username: String = signUpRequest.username
         if (userService.existsUserByUsername(username)) {
@@ -68,7 +68,7 @@ class UserApiController(private val oAuth2Provider: OAuth2Provider,
     }
 
     @GetMapping("/check-username/")
-    fun checkUsername(@RequestBody @Valid checkUsernameRequest: CheckUsernameRequest): ResponseEntity<Void?>? {
+    fun checkUsername(@RequestBody @Valid checkUsernameRequest: UserDTO.CheckUsernameRequest): ResponseEntity<Void?>? {
         if (userService.existsUserByUsername(checkUsernameRequest.username)) {
             throw ResponseStatusException(HttpStatus.CONFLICT)
         }
@@ -77,13 +77,13 @@ class UserApiController(private val oAuth2Provider: OAuth2Provider,
 
     //    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/me/")
-    fun myInfo(@CurrentUser currentUser: UserPrincipal): ResponseEntity<UserInformationResponse> {
-        return ResponseEntity(UserInformationResponse(currentUser.user), HttpStatus.OK)
+    fun myInfo(@CurrentUser currentUser: UserPrincipal): ResponseEntity<UserDTO.UserInformationResponse> {
+        return ResponseEntity(UserDTO.UserInformationResponse(currentUser.user), HttpStatus.OK)
     }
 
     //    @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping("/info/")
-    fun setPreferences(@RequestBody @Valid preferenceRequestList: List<SetPreferenceRequest>, @CurrentUser currentUser: UserPrincipal): ListResponse<PreferenceInRegionResponse> {
+    fun setPreferences(@RequestBody @Valid preferenceRequestList: List<PreferenceDTO.SetPreferenceRequest>, @CurrentUser currentUser: UserPrincipal): ListResponse<PreferenceDTO.PreferenceInRegionResponse> {
         return ListResponse(preferenceRequestList.map { preferenceRequest ->
             val region = regionService.findRegionById(preferenceRequest.regionId)
             if (region.isEmpty) {
@@ -92,12 +92,12 @@ class UserApiController(private val oAuth2Provider: OAuth2Provider,
             }
             val preferences = preferenceRequest.preferences
             preferenceService.setPreferences(currentUser.user, region.get(), preferences)
-            PreferenceInRegionResponse(region.get(), preferences)
+            PreferenceDTO.PreferenceInRegionResponse(region.get(), preferences)
         })
     }
 
     @GetMapping("/playable/")
-    fun getPlayableUsers(@Valid @ModelAttribute getUsersByPreferenceRequest: GetUsersByPreferenceRequest): ListResponse<Long?>? {
+    fun getPlayableUsers(@Valid @ModelAttribute getUsersByPreferenceRequest: PreferenceDTO.GetUsersByPreferenceRequest): ListResponse<Long?>? {
         val regionName = getUsersByPreferenceRequest.regionName
         val dayOfWeek = getUsersByPreferenceRequest.dayOfWeek
         val startTime = getUsersByPreferenceRequest.startTime
@@ -107,17 +107,17 @@ class UserApiController(private val oAuth2Provider: OAuth2Provider,
 
     @PostMapping("/device/")
     @ResponseStatus(HttpStatus.CREATED)
-    fun setDevice(@RequestBody @Valid request: SetDeviceRequest, @CurrentUser currentUser: UserPrincipal): DeviceResponse {
+    fun setDevice(@RequestBody @Valid request: DeviceDTO.SetDeviceRequest, @CurrentUser currentUser: UserPrincipal): DeviceDTO.Response {
         val device = Device(request.deviceToken)
         device.user = currentUser.user
         deviceService.create(device)
-        return DeviceResponse(device)
+        return DeviceDTO.Response(device)
     }
 
     @GetMapping("/room/")
-    fun getBelongingRooms(@CurrentUser currentUser: UserPrincipal): RoomsOfUserResponse? {
+    fun getBelongingRooms(@CurrentUser currentUser: UserPrincipal): RoomDTO.RoomsOfUserResponse? {
         val rooms: List<Room>? = roomService.findRoomsByUser(currentUser.user)
-        val roomsOfUserResponse = RoomsOfUserResponse(currentUser.user)
+        val roomsOfUserResponse = RoomDTO.RoomsOfUserResponse(currentUser.user)
         roomsOfUserResponse.rooms = rooms?.map { RoomDTO.Response(it) } ?: emptyList()
         return roomsOfUserResponse
     }

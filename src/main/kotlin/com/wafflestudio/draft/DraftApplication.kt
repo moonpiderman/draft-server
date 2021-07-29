@@ -9,3 +9,9 @@ class DraftApplication
 fun main(args: Array<String>) {
     runApplication<DraftApplication>(*args)
 }
+
+/*
+M: repository
+V: service
+C: controller
+ */

@@ -8,10 +8,8 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class DeviceService {
-    @Autowired
-    private val deviceRepository: DeviceRepository? = null
-
+class DeviceService(private val deviceRepository: DeviceRepository? = null) {
+    
     @Transactional
     fun create(device: Device): Long? {
         deviceRepository!!.save(device)

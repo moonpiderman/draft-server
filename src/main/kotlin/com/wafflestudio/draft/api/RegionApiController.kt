@@ -1,8 +1,9 @@
 package com.wafflestudio.draft.api
 
+import com.wafflestudio.draft.dto.PageDTO
 import com.wafflestudio.draft.dto.RegionDTO
 import com.wafflestudio.draft.dto.response.ListResponse
-import com.wafflestudio.draft.dto.response.PageResponse
+//import com.wafflestudio.draft.dto.response.PageResponse
 import com.wafflestudio.draft.service.RegionService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
@@ -17,13 +18,13 @@ class RegionApiController(
         private val regionService: RegionService
 ) {
     @GetMapping("/")
-    fun getRegionsV1(@Valid @ModelAttribute request: RegionDTO.Request): PageResponse<RegionDTO.Summary> {
+    fun getRegionsV1(@Valid @ModelAttribute request: RegionDTO.Request): PageDTO.Response<RegionDTO.Summary> {
         val depth3 = request.depth3.orEmpty()
         val page = request.page
         val pageable = PageRequest.of(page, 20)
 
         val regions = regionService.findRegionsByDepth3(depth3, pageable)
-        return PageResponse(regions)
+        return PageDTO.Response(regions)
     }
 
     @GetMapping("/room/")

@@ -1,5 +1,6 @@
 package com.wafflestudio.draft.model
 
+
 import javax.persistence.*
 import javax.validation.constraints.NotBlank
 

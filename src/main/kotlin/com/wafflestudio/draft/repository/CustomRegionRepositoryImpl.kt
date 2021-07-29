@@ -2,7 +2,8 @@ package com.wafflestudio.draft.repository
 
 import com.wafflestudio.draft.dto.RegionDTO
 import com.wafflestudio.draft.dto.RoomDTO
-import com.wafflestudio.draft.dto.response.UserInformationResponse
+import com.wafflestudio.draft.dto.UserDTO
+//import com.wafflestudio.draft.dto.response.UserInformationResponse
 import com.wafflestudio.draft.model.enums.RoomStatus
 import java.time.LocalDateTime
 import javax.persistence.EntityManager
@@ -65,7 +66,7 @@ class CustomRegionRepositoryImpl(private val entityManager: EntityManager) : Cus
                     )
                 })
                 if (userId != null) {
-                    room.participants.putIfAbsent(userId, UserInformationResponse(
+                    room.participants.putIfAbsent(userId, UserDTO.UserInformationResponse(
                             column[13] as Long,
                             column[14] as String,
                             column[15] as String,

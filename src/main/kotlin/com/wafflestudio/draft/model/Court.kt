@@ -1,5 +1,6 @@
 package com.wafflestudio.draft.model
 
+
 import org.locationtech.jts.geom.Point
 import javax.persistence.*
 import javax.validation.constraints.Min

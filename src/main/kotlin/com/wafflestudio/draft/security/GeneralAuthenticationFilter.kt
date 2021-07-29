@@ -1,7 +1,8 @@
 package com.wafflestudio.draft.security
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.wafflestudio.draft.dto.request.AuthenticationRequest
+import com.wafflestudio.draft.dto.AuthenticationDTO
+//import com.wafflestudio.draft.dto.request.AuthenticationRequest
 import com.wafflestudio.draft.security.oauth2.OAuth2Token
 import com.wafflestudio.draft.security.oauth2.client.exception.SucceedOAuthUserNotFoundException
 import org.springframework.security.authentication.AuthenticationManager
@@ -38,7 +39,7 @@ class GeneralAuthenticationFilter(authenticationManager: AuthenticationManager?,
     @Throws(AuthenticationException::class)
     override fun attemptAuthentication(request: HttpServletRequest, response: HttpServletResponse): Authentication {
         // Parse auth request
-        val parsedRequest: AuthenticationRequest = try {
+        val parsedRequest: AuthenticationDTO.Request = try {
             parseRequest(request)
         } catch (e: IOException) {
             throw RuntimeException("Bad request")
@@ -54,10 +55,10 @@ class GeneralAuthenticationFilter(authenticationManager: AuthenticationManager?,
     }
 
     @Throws(IOException::class)
-    private fun parseRequest(request: HttpServletRequest): AuthenticationRequest {
+    private fun parseRequest(request: HttpServletRequest): AuthenticationDTO.Request {
         val reader: BufferedReader = request.reader
         val mapper = ObjectMapper()
-        return mapper.readValue(reader, AuthenticationRequest::class.java)
+        return mapper.readValue(reader, AuthenticationDTO.Request::class.java)
     }
 
     init {
